@@ -8,7 +8,7 @@ import lombok.Data;
 public class SimulationResult {
     private double valorFinanciado;
     private double primeiraParcela;
-    private double ultimoParcela;
+    private double ultimaParcela;
     private double totalPago;
     private double totalJuros;
     private double percentualJuros;

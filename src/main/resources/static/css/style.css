@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Financiamento</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<main>
+    <h1>Calculadora de Financiamento</h1>
+
+    <!--/* th:action aponta pro POST /  */-->
+    <!--/* th:object liga o form ao SimulacaoRequest */-->
+    <form th:action="@{/}" th:object="${req}" method="post">
+
+        <div class="campo">
+            <label>Valor do imóvel (R$)</label>
+            <input type="number" th:field="*{valorImovel}"
+                   placeholder="400000" min="50000" step="1000"/>
+            <span class="erro" th:if="${#fields.hasErrors('valorImovel')}"
+                  th:errors="*{valorImovel}"></span>
+        </div>
+
+        <div class="campo">
+            <label>Entrada (%)</label>
+            <input type="number" th:field="*{entradaPorcentagem}"
+                   placeholder="20" min="5" max="50"/>
+        </div>
+
+        <div class="campo">
+            <label>Taxa de juros ao ano (%)</label>
+            <input type="number" th:field="*{taxaAnual}"
+                   placeholder="8.0" step="0.1" min="4" max="20"/>
+        </div>
+
+        <div class="campo">
+            <label>Prazo (anos)</label>
+            <input type="number" th:field="*{prazoAnos}"
+                   placeholder="30" min="5" max="35"/>
+        </div>
+
+        <div class="campo">
+            <label>Sistema de amortização</label>
+            <select th:field="*{sistema}">
+                <option value="SAC">SAC (parcelas decrescentes)</option>
+                <option value="PRICE">Price (parcelas fixas)</option>
+            </select>
+        </div>
+
+        <button type="submit">Calcular</button>
+    </form>
+
+    <!--/* th:if só renderiza esse bloco se result existir */-->
+    <section th:if="${result}" class="resultado">
+        <h2>Resultado — <span th:text="${result.sistema}"></span></h2>
+
+        <div class="grid">
+            <div class="card">
+                <span class="label">Valor financiado</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.valorFinanciado)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">1ª parcela</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.primeiraParcela)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Última parcela</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.ultimaParcela)}">
+                </span>
+            </div>
+            <div class="card destaque">
+                <span class="label">Total pago</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.totalPago)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Total em juros</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.totalJuros)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Juros sobre financiado</span>
+                <span class="valor"
+                      th:text="${#numbers.formatDecimal(result.percentualJuros,1,1) + '%'}">
+                </span>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
+Sintaxe Thymeleaf essencial:
+
+th:field="*{campo}" — liga input ao campo do objeto
+th:text="${variavel}" — imprime um valor
+th:if="${condicao}" — renderização condicional
+th:errors="*{campo}" — exibe mensagem de erro de validação
+#numbers.formatCurrency(valor) — formata como moeda
+
+
+Passo 7 — O CSS
+Crie src/main/resources/static/css/style.css:
+css* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Georgia', serif;
+    background: #f5f0eb;
+    color: #2c2c2c;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+main {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 3px solid #2c2c2c;
+    padding-bottom: .75rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+}
+
+label { font-size: .9rem; font-weight: bold; }
+
+input, select {
+    padding: .65rem .85rem;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color .2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #2c2c2c;
+}
+
+.erro { color: #c0392b; font-size: .82rem; }
+
+button {
+    width: 100%;
+    padding: .85rem;
+    background: #2c2c2c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: .5rem;
+    transition: background .2s;
+}
+
+button:hover { background: #444; }
+
+.resultado {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid #2c2c2c;
+}
+
+.resultado h2 { margin-bottom: 1.25rem; font-size: 1.4rem; }
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.card {
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card.destaque { border-color: #2c2c2c; background: #2c2c2c; color: #fff; }
+
+.label { font-size: .8rem; opacity: .65; }
+.valor { font-size: 1.3rem; font-weight: bold; }
