@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Financiamento</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main>
+    <h1>Calculadora de Financiamento</h1>
+    <form th:action="@{/}" th:object="${req}" method="post">
+
+        <div class="campo">
+            <label> Valor do imóvel (R$)</label>
+            <input type="number" th:field="*{valorImovel}"
+                   placeholder="400000" min="50000" step="1000"/>
+            <span class="erro" th:if="${#fields.hasErrors('valorImovel')}"
+                  th:errors="*{valorImovel}"></span>
+        </div>
+
+        <div class="campo">
+            <label>Entrada(%)</label>
+            <input type="number" th:field="*{entradaPorcentagem}"
+            placeholder="400000" min="5" max="70"/>
+        </div>
+
+        <div class="campo">
+            <label>Taxa de juros ao ano (%)</label>
+            <input type="number" th:field="*{taxaAnual}"
+                   placeholder="8.0" step="0.1" min="4" max="20"/>
+        </div>
+
+        <div class="campo">
+            <label>Prazo (anos)</label>
+            <input type="number" th:field="*{prazoAnos}"
+                   placeholder="30" min="5" max="50"/>
+        </div>
+
+        <div class="campo">
+            <label>Sistema de amortização</label>
+            <select th:field="*{sistema}">
+                <option value="SAC"> SAC (parcelas decrescentes)</option>
+                <option value="PRICE">Price (parcerlas fixas)</option>
+            </select>
+        </div>
+
+        <button type="submit">Calcular</button>
+    </form>
+
+    <section th:if="${result}" class="resultado">
+        <h2>Resultado - <span th:text="${result.sistema}"></span></h2>
+
+        <div class="grid">
+            <div class="card">
+                <span class="label">Valor financiado</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.valorFinanciado)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">1ª parcela</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.primeiraParcela)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Última parcela</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.ultimaParcela)}">
+                </span>
+            </div>
+            <div class="card destaque">
+                <span class="label">Total pago</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.totalPago)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Total em juros</span>
+                <span class="valor"
+                      th:text="${#numbers.formatCurrency(result.totalJuros)}">
+                </span>
+            </div>
+            <div class="card">
+                <span class="label">Juros sobre financiado</span>
+                <span class="valor"
+                      th:text="${#numbers.formatDecimal(result.percentualJuros,1,1) + '%'}">
+                </span>
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>
